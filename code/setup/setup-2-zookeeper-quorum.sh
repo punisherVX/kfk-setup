@@ -11,7 +11,7 @@ vi /opt/kafka/config/zookeeper.properties
 sudo service zookeeper stop
 sudo service zookeeper start
 # observe the logs - need to do this on every machine
-cat /home/ubuntu/kafka/logs/zookeeper.out | head -100
+cat /opt/kafka/logs/zookeeper.out | head -100
 nc -vz localhost 2181
 nc -vz localhost 2888
 nc -vz localhost 3888
