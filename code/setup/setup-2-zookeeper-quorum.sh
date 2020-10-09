@@ -1,12 +1,12 @@
 #!/bin/bash
 # create data dictionary for zookeeper
 sudo mkdir -p /data/zookeeper
-sudo chown -R ubuntu:ubuntu /data/
+sudo chown -R earcuri:earcuri /data/
 # declare the server's identity
 echo "1" > /data/zookeeper/myid
 # edit the zookeeper settings
-rm /home/ubuntu/kafka/config/zookeeper.properties
-nano /home/ubuntu/kafka/config/zookeeper.properties
+rm /opt/kafka/config/zookeeper.properties
+vi /opt/kafka/config/zookeeper.properties
 # restart the zookeeper service
 sudo service zookeeper stop
 sudo service zookeeper start
