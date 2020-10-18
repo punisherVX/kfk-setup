@@ -8,7 +8,7 @@ echo "* hard nofile 100000
 * soft nofile 100000" | sudo tee --append /etc/security/limits.conf
 sudo reboot
 sudo service zookeeper start
-sudo chown -R ubuntu:ubuntu /data/kafka
+sudo chown -R pensando:pensando /data/kafka
 
 # edit the config
 rm config/server.properties
@@ -18,7 +18,7 @@ nano config/server.properties
 bin/kafka-server-start.sh config/server.properties
 
 # Install Kafka boot scripts
-sudo nano /etc/init.d/kafka
+sudo vi /etc/init.d/kafka
 sudo chmod +x /etc/init.d/kafka
 sudo chown root:root /etc/init.d/kafka
 # you can safely ignore the warning
@@ -29,7 +29,7 @@ sudo service kafka start
 # verify it's working
 nc -vz localhost 9092
 # look at the logs
-cat /home/ubuntu/kafka/logs/server.log
+cat /opt/kafka/logs/server.log
 # make sure to fix the __consumer_offsets topic
 bin/kafka-topics.sh --zookeeper zookeeper1:2181/kafka --config min.insync.replicas=1 --topic __consumer_offsets --alter
 

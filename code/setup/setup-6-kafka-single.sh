@@ -7,11 +7,11 @@ echo "* hard nofile 100000
 # reboot for the file limit to be taken into account
 sudo reboot
 sudo service zookeeper start
-sudo chown -R ubuntu:ubuntu /data/kafka
+sudo chown -R pensando:pensando /data/kafka
 
 # edit kafka configuration
 rm config/server.properties
-nano config/server.properties
+vi config/server.properties
 
 # launch kafka
 bin/kafka-server-start.sh config/server.properties
@@ -28,7 +28,7 @@ sudo service kafka start
 # verify it's working
 nc -vz localhost 9092
 # look at the server logs
-cat /home/ubuntu/kafka/logs/server.log
+cat /opt/kafka/logs/server.log
 
 
 # create a topic

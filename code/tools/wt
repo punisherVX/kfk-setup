@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#  Kafka tools setup on localhost so we can connect to our clusters and
+#  see what is going on.  This starts all 3 of the docker compose files in
+#  this directory.  Link this to a bin directory near you!!
+
+#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIR=`dirname "$0"`
+echo $DIR

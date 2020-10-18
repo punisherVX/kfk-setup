@@ -31,9 +31,8 @@ exit
 docker run hello-world
 
 # Add hosts entries (mocking DNS) - put relevant IPs here
-echo "172.31.9.1 kafka1
-172.31.9.1 zookeeper1
-172.31.19.230 kafka2
-172.31.19.230 zookeeper2
-172.31.35.20 kafka3
-172.31.35.20 zookeeper3" | sudo tee --append /etc/hosts
+echo "
+192.168.45.130 pktools pen-kafka-tools
+192.168.45.131 pk1 pzk1 pen-kafka1 pen-zookeeper1
+192.168.45.132 pk2 pzk2 pen-kafka2 pen-zookeeper2
+192.168.45.133 pk3 pzk3 pen-kafka3 pen-zookeeper3" | sudo tee --append /etc/hosts
