@@ -1,10 +1,9 @@
 #!/bin/bash
 # Packages
-sudo apt-get update && \
-      sudo apt-get -y install wget ca-certificates zip net-tools vim nano tar netcat
+sudo apt update && sudo apt -y install wget ca-certificates zip net-tools vim nano tar netcat
 
 # Java Open JDK 8
-sudo apt-get -y install default-jdk
+sudo apt -y install openjdk-8-jdk openjdk-8-jre
 java -version
 
 # Disable RAM Swap - can set to 0 on certain Linux distro
@@ -13,51 +12,43 @@ echo 'vm.swappiness=1' | sudo tee --append /etc/sysctl.conf
 
 # Add hosts entries (mocking DNS) - put relevant IPs here
 echo "
-10.29.9.1 kafka1
-10.29.9.1 zookeeper1
-10.29.19.230 kafka2
-10.29.19.230 zookeeper2
-10.29.35.20 kafka3
-10.29.35.20 zookeeper3" | sudo tee --append /etc/hosts
+10.29.75.151 tbd-kafka1 tkfk1
+10.29.75.151 tbd-zookeeper1 tzk1
+10.29.75.152 tbd-kafka2 tkfk2
+10.29.75.152 tbd-zookeeper2 tzk2
+10.29.75.153 tbd-kafka3 tkfk3
+10.29.75.153 tbd-zookeeper3 tzk3
+" | sudo tee --append /etc/hosts
 
-# download Zookeeper and Kafka. Recommended is latest Kafka (2.6) and Scala 2.12
+# If needed, download Zookeeper and Kafka. Recommended is latest Kafka (2.6) and Scala 2.12
 wget http://apache.mirror.digitalpacific.com.au/kafka/2.6.0/kafka_2.13-2.6.0.tgz
 tar -zvxf kafka_2.13-2.6.0.tgz
-rm kafka_2.13-2.6.0.tgz
-sudo mv kafka_2.13-2.6.0/ /opt/kafka
-cd /opt/kafka/
+rm kafka_2.13-2.6.0.tgz  # optional
+sudo ln -s ~/kafka_2.13-2.6.0 /opt/kafka
+
+# create data dictionary for zookeeper
+sudo mkdir -p /data/zookeeper
+sudo chown -R pensando:pensando /data/
+# declare the server's identity
+echo "3" > /data/zookeeper/myid
+
 # Zookeeper quickstart
-cat config/zookeeper.properties
-bin/zookeeper-server-start.sh config/zookeeper.properties
+cp ../zookeeper/zookeeper.properties /opt/kafka/config/zookeeper.properties
+/opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties
 # binding to port 2181 -> you're good. Ctrl+C to exit
 
 # Testing Zookeeper install
 # Start Zookeeper in the background
-bin/zookeeper-server-start.sh -daemon config/zookeeper.properties
-bin/zookeeper-shell.sh localhost:2181
+/opt/kafka/bin/zookeeper-server-start.sh -daemon /opt/kafka/config/zookeeper.properties
+/opt/kafka/bin/zookeeper-shell.sh localhost:2181
 ls /
+# Ctrl-C to exit
+
 # demonstrate the use of a 4 letter word
 echo "ruok" | nc localhost 2181 ; echo
 
 # Install Zookeeper boot scripts
-sudo vi /etc/systemd/system/zookeeper.service
-# Insert the below text
-      ```
-      [Unit]
-      Requires=network.target remote-fs.target
-      After=network.target remote-fs.target
-
-      [Service]
-      Type=simple
-      User=root
-      ExecStart=/opt/kafka/bin/zookeeper-server-start.sh opt/kafka/config/zookeeper.properties
-      ExecStop=/opt/kafka/bin/zookeeper-server-stop.sh
-      Restart=on-abnormal
-
-      [Install]
-      WantedBy=multi-user.target
-      ```
-
+cp ../zookeeper/zookeeper_startup_systemV /etc/systemd/system/zookeeper.service
 # enable the service and start it
 sudo systemctl enable zookeeper.service
 sudo systemctl start zookeeper.service
@@ -70,10 +61,13 @@ nc -vz localhost 2181
 # start zookeeper
 sudo service zookeeper start
 # verify it's started
+# observe the logs - need to do this on every machine
+cat /opt/kafka/logs/zookeeper.out | head -100
 nc -vz localhost 2181
-# by default, in latest versions, this is not whitelisted.  You will get an
-# error, but that is ok, if it returns the shitelist msg that means it's up
+nc -vz localhost 2888
+nc -vz localhost 3888
 echo "ruok" | nc localhost 2181 ; echo
-
-# check the logs
-cat logs/zookeeper.out
+echo "stat" | nc localhost 2181 ; echo
+bin/zookeeper-shell.sh localhost:2181
+# not happy
+ls /
