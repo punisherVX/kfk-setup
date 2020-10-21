@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # create a topic with replication factor of 3
-bin/kafka-topics.sh --zookeeper zookeeper1:2181,zookeeper2:2181,zookeeper3:2181/kafka --create --topic fourth_topic --replication-factor 3 --partitions 3
+/opt/kafka/bin/kafka-topics.sh --zookeeper tbd-zookeeper1:2181,tbd-zookeeper2:2181,tbd-zookeeper3:2181/kafka --create --topic fourth_topic --replication-factor 3 --partitions 3
 
 # generate 10KB of random data
 base64 /dev/urandom | head -c 10000 | egrep -ao "\w" | tr -d '\n' > file10KB.txt
 
 # in a new shell: start a continuous random producer
-bin/kafka-producer-perf-test.sh --topic fourth_topic --num-records 10000 --throughput 10 --payload-file file10KB.txt --producer-props acks=1 bootstrap.servers=kafka1:9092,kafka2:9092,kafka3:9092 --payload-delimiter A
+/opt/kafka/bin/kafka-producer-perf-test.sh --topic fourth_topic --num-records 10000 --throughput 10 --payload-file file10KB.txt --producer-props acks=1 bootstrap.servers=tbd-kafka1:9092,tbd-kafka2:9092,tbd-kafka3:9092 --payload-delimiter A
 
 # in a new shell: start a consumer
-bin/kafka-console-consumer.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --topic fourth_topic
+/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --topic fourth_topic
 
 # kill one kafka server - all should be fine
 # kill another kafka server -
